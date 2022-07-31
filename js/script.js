@@ -2,8 +2,6 @@ const Elements = {
     game_banel: document.querySelector(".game-banel"),
     boxes: document.querySelectorAll(".game-banel .box"),
     backs: document.querySelectorAll(".game-banel .box .back"),
-    startCanava: document.querySelector(".canava"),
-    catagory: document.querySelectorAll(".canava .shapes span"),
     userName: document.querySelector(".info-banel .userName span"),
     timer: document.querySelector("#timer"),
     triesCount: document.querySelector(".tries span"),
@@ -14,8 +12,9 @@ let listOrder = Array.from(Array(Elements.boxes.length).keys()),
     allIcons = [],
     duration = 3,
     sleep = 500,
-    wrongChoose = 0;
-(rightChoose = 0), (chances = 15);
+    wrongChoose = 0,
+    rightChoose = 0,
+    chances = 1;
 
 const Sounds = {
     timer: "sounds/countdown.mp3",
@@ -24,6 +23,7 @@ const Sounds = {
     victory: "sounds/Victory.mp3",
     lose: "sounds/Lose.mp3",
 };
+
 let audio = document.createElement("audio");
 
 RandomeArray(listOrder);
@@ -97,6 +97,9 @@ const catgIcons = {
     ],
 };
 
+// Start Game
+start();
+
 // Trigger fllipBox function
 Elements.boxes.forEach((box) => {
     box.addEventListener("click", () => {
@@ -107,31 +110,105 @@ Elements.boxes.forEach((box) => {
 // Edit User Name
 Elements.editName.addEventListener("click", canavaName);
 
-// On Pick Catagory
-Elements.catagory.forEach((type) => {
-    type.addEventListener("click", () => {
-        Elements.triesCount.textContent = `${wrongChoose} / ${chances}`;
-        setIconspick(type);
-        saveIcons();
+// Start functions
+function start() {
+    let canava = document.createElement("div"),
+        header = document.createElement("h2"),
+        shapes = document.createElement("div"),
+        ids = ["Brands", "Food", "Animals"];
 
-        let savedName = window.localStorage.getItem("username");
+    canava.classList.add("canava");
+    shapes.classList.add("shapes");
 
-        if (savedName !== null) {
-            Elements.userName.textContent = savedName;
-            canavanameCheck = true;
-        } else {
-            canavaName();
-        }
-        let Named = setInterval(() => {
-            if (window.localStorage.getItem("username") !== null) {
-                stopClicking(duration * 1000 + 1000);
-                handleBox();
-                Remember();
-                clearInterval(Named);
+    for (let i = 0; i < 3; i++) {
+        let shape = document.createElement("span"),
+            icon = document.createElement("i"),
+            catName = document.createElement("span");
+
+        shape.setAttribute("id", ids[i]);
+        icon.setAttribute("class", catgIcons[`${ids[i]}`][0].class);
+
+        shape.appendChild(icon);
+        catName.textContent = ids[i];
+        shape.appendChild(catName);
+        shapes.appendChild(shape);
+    }
+
+    header.textContent = "Pick Catagory";
+
+    canava.appendChild(header);
+    canava.appendChild(shapes);
+    document.body.appendChild(canava);
+
+    PickCat();
+}
+function PickCat() {
+    document.querySelectorAll(".canava .shapes span").forEach((type) => {
+        type.addEventListener("click", () => {
+            Elements.triesCount.textContent = `${wrongChoose} / ${chances}`;
+            setIconspick(type);
+            saveIcons();
+
+            let savedName = window.localStorage.getItem("username");
+
+            if (savedName !== null) {
+                Elements.userName.textContent = savedName;
+                canavanameCheck = true;
+            } else {
+                canavaName();
             }
-        }, 100);
+            let Named = setInterval(() => {
+                if (window.localStorage.getItem("username") !== null) {
+                    stopClicking(duration * 1000 + 1000);
+                    handleBox();
+                    Remember();
+                    clearInterval(Named);
+                }
+            }, 100);
+        });
     });
-});
+}
+function canavaName() {
+    let nameCanava = document.createElement("div");
+    let prompt = document.createElement("input");
+
+    nameCanava.setAttribute("class", "namecanava");
+    prompt.setAttribute("placeholder", "Enter a name");
+    prompt.setAttribute("maxlength", "9");
+
+    nameCanava.appendChild(prompt);
+    document.body.appendChild(nameCanava);
+
+    nameCanava.style.backgroundColor = "#161616f7";
+
+    prompt.onfocus = () => {
+        prompt.style.outline = "none";
+    };
+    prompt.focus();
+
+    prompt.addEventListener("keyup", (ev) => {
+        if (ev.key === "Enter") {
+            let Name = Array.from(prompt.value.trim());
+            let clearName = Name.filter((char) => {
+                return char.match(/[a-zA-Z]/);
+            })
+                .toString()
+                .replace(/[,]/g, "");
+            if (
+                clearName === null ||
+                clearName === "" ||
+                clearName.split("").length < 2
+            ) {
+                window.localStorage.setItem("username", "Unknown");
+            } else {
+                window.localStorage.setItem("username", clearName);
+            }
+            Elements.userName.textContent =
+                window.localStorage.getItem("username");
+            nameCanava.remove();
+        }
+    });
+}
 
 // Randome array for order list
 function RandomeArray(array) {
@@ -270,11 +347,11 @@ function Finished() {
 }
 
 function ResetGame() {
+    start();
     HideAndRemove();
     wrongChoose = 0;
     rightChoose = 0;
     Elements.triesCount.textContent = wrongChoose;
-    Elements.startCanava.style.display = "flex";
     saveIcons();
 }
 
@@ -343,55 +420,6 @@ function GameOver(result) {
     });
 }
 
-function showAllIcons() {
-    let backBox = document.querySelectorAll(".box .back");
-    backBox.forEach((back, index) => {
-        back.appendChild(allIcons[index]);
-    });
-}
-
-function canavaName() {
-    let nameCanava = document.createElement("div");
-    let prompt = document.createElement("input");
-
-    nameCanava.setAttribute("class", "namecanava");
-    prompt.setAttribute("placeholder", "Enter a name");
-    prompt.setAttribute("maxlength", "9");
-
-    nameCanava.appendChild(prompt);
-    document.body.appendChild(nameCanava);
-
-    nameCanava.style.backgroundColor = "#161616f7";
-
-    prompt.onfocus = () => {
-        prompt.style.outline = "none";
-    };
-    prompt.focus();
-
-    prompt.addEventListener("keyup", (ev) => {
-        if (ev.key === "Enter") {
-            let Name = Array.from(prompt.value.trim());
-            let clearName = Name.filter((char) => {
-                return char.match(/[a-zA-Z]/);
-            })
-                .toString()
-                .replace(/[,]/g, "");
-            if (
-                clearName === null ||
-                clearName === "" ||
-                clearName.split("").length < 2
-            ) {
-                window.localStorage.setItem("username", "Unknown");
-            } else {
-                window.localStorage.setItem("username", clearName);
-            }
-            Elements.userName.textContent =
-                window.localStorage.getItem("username");
-            nameCanava.remove();
-        }
-    });
-}
-
 function setIconspick(pick) {
     // Get id name for the selected catagory
     let pickName = pick.getAttribute("id");
@@ -409,7 +437,8 @@ function setIconspick(pick) {
         // append it inside the back
         back.appendChild(newI);
     });
-    Elements.startCanava.style.display = "none";
+    // document.querySelector(".canava").style.display = "none";
+    document.querySelector(".canava").remove();
 }
 
 function saveIcons() {
