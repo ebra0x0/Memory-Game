@@ -67,7 +67,6 @@ body {
     background-color: #03bd5f;
     text-align: center;
     transition: transform 0.2s ease-in-out;
-    font-size: 14px;
     color: #464646;
     font-weight: 600;
     cursor: pointer;
@@ -75,10 +74,14 @@ body {
 .canava .shapes > span i {
     font-size: 40px;
     color: white;
-    transition: font-size 0.2s;
+    transition: font-size 0.1s ease-in-out;
 }
 .canava .shapes > span span {
-    transition: font-size 0.2s;
+    font-size: 14px;
+    transition: font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.canava .shapes > span span strong {
+    font-size: 19px;
 }
 .canava .shapes > span:hover {
     transform: scale(1.1);
@@ -87,7 +90,8 @@ body {
 .canava .shapes > span:hover i {
     font-size: 60px;
 }
-.canava .shapes > span:hover span {
+.canava .shapes > span:hover span,
+.canava .shapes > span:hover strong {
     font-size: 0px;
 }
 /*Style Name Canava*/

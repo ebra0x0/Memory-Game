@@ -129,7 +129,9 @@ function start() {
         icon.setAttribute("class", catgIcons[`${ids[i]}`][0].class);
 
         shape.appendChild(icon);
-        catName.textContent = ids[i];
+        catName.innerHTML = `<strong>${ids[i].charAt(0)}</strong>${ids[i].slice(
+            1
+        )}`;
         shape.appendChild(catName);
         shapes.appendChild(shape);
     }
