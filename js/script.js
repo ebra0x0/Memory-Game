@@ -14,7 +14,7 @@ let listOrder = Array.from(Array(Elements.boxes.length).keys()),
     sleep = 500,
     wrongChoose = 0,
     rightChoose = 0,
-    chances = 1;
+    chances = 15;
 
 const Sounds = {
     timer: "sounds/countdown.mp3",
